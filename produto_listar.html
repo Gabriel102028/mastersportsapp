@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MasterSports.com</title>
+
+    <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <!-- JQUER MOBILE CDN DO GOOGLE -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+
+        //obtem o id do usuario na sessao
+        var id = localStorage.getItem('codigo_usuario');
+
+        if (!id) { //se ja existe codigo_usuario na sessao
+            //redireciona para a pagina de produtos
+            window.location.href = 'index.html';
+
+        }
+    </script>
+
+</head>
+<body>
+    <div data-role="page" id="pagindex">
+
+        <!--cabeçalho da pagina-->
+        <header data-role="header" id="cor" data-position="fixed">
+            <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>            
+            <a href="#" onclick="sair()" class="ui-btn-right ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
+            <div data-role="navbar" class="ui-filterable">
+                <ul>
+                    <li><a href="#" class="ui-btn-active" class="ui-btn-active"><i class="fa fa-shopping-bag"></i> Produtos</a>
+                    </li>
+                    <li><a href="pedidos_listar.html" data-ajax="false"><i class="fa fa-shopping-cart"></i> Pedidos</a>
+                    </li>
+                </ul>
+                <div class="ui-bar">
+                    <form class="ui-filterable">
+                         <input id="filterBasic-input" data-type="search" placeholder="Pesquisar">
+                    </form>
+            </div>
+            </div>
+        </header>
+
+          <main role="main" class="ui-content">
+              <form id="prodlista" data-filter="true" data-input="#filterBasic-input">
+                  <!--todos os elementos que vir preenchidos com o ajax-->
+              </form>
+          </main>
+
+        <footer data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <!--traz o icone no botao-->
+                    <li class="ui-field-contain">
+                        <a onclick="enviar()" id="cor" href="#" style="color:white"><i class="fa fa-paper-plane"></i>
+                            Comprar</a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+    <script>
+
+            function carregapagina() {
+
+                var endereco = 'http://localhost/mastersportsapp/conexao/produto_listar.php';
+
+
+                $.ajax({
+
+                    url         : endereco,
+                    type        : 'get',
+                    beforeSend  : function () { //executa antes de enviar o ajax
+
+                        // mostrar o spinner
+                        $.mobile.loading('show',{
+                            text        : 'Carregando Produtos!',
+                            textVisible : true,
+                            theme       : 'b',
+                            textonly    : false
+                        });
+                    }
+
+                }).done(function (resposta) { //executado quando recebe a resposta do servidor
+
+                    //converte uma string JSON em um objeto
+                    var produtos = JSON.parse(resposta);
+
+                    produtos.map(function (produto, indice) {
+
+                        //guardando o codigo do produto numa var
+                        var pid = produto.codigo_produto;
+
+                        var prodStr = '<ul data-role="listview" data-inset="true" data-icon="false">';
+                                prodStr += '<li>';
+                                    prodStr += '<a href="#">';
+                                        prodStr += '<img id="imagem" src="' + produto.imagem_prod + '">';
+                                        prodStr += '<h1">' + produto.nome_prod + '</h1>';
+                                        prodStr += '<p>' + produto.descricao_prod +'</p>';
+                                        prodStr += '<p>' + produto.nome_marca + '</p>';
+                                        prodStr += '<p>' + produto.nome_categoria + '</p>';
+                                        prodStr += '<p>' + produto.valor_formatado + '</p>';
+                                    prodStr += '</a>';
+                                prodStr += '</li>';
+                                prodStr += '<li>';
+                                    prodStr += '<label style="text-align:center";>Selecione a Quantidade</label>';
+                                    prodStr += '<fieldset class="ui-grid-b">';
+                                        prodStr += '<div class="ui-block-a"><button onclick="return diminuir('+ indice +')" data-mini="true">-</button></div>';
+                                        prodStr += '<div class="ui-block-b"><input name="prod['+ produto.codigo_produto +']" style="text-align:center" value="0" id="qtd_'+ indice +'" data-mini="true" type="text"></div>';
+                                        prodStr += '<div class="ui-block-c"><button onclick="return aumentar('+ indice +')" data-mini="true">+</button></div>';
+                                    prodStr += '</fieldset>';
+                                prodStr += '</li>';
+                            prodStr += '</ul>';
+
+                            $('#prodlista').append(prodStr);
+
+                            // $('#prodlista').trigger('create');
+                    });
+                    $('#prodlista').trigger('create');
+                    $.mobile.loading('hide');
+
+                }).fail(function (erro) { //executar quando a quisiçao retornar erro
+
+                });
+            }
+
+            function enviar() {
+                var form = document.getElementById('prodlista');
+
+                var f_data = new FormData(form);
+                //console.log(f_data);
+
+                var dados = {};
+
+                f_data.forEach(function (valor, chave) {
+                    dados[chave] = valor;
+                });
+
+                dados.codigo_usuario = localStorage.getItem('codigo_usuario');
+
+                var endereco = 'http://localhost/mastersportsapp/conexao/pedidos_inserir.php';
+
+                $.ajax({
+
+                    url : endereco,
+                    type : 'post',
+                    data : dados,
+                    beforeSend : function () {
+                        $.mobile.loading('show',{
+                            text : 'Enviando compra',
+                            textVisible : true,
+                            theme : 'b',
+                            textonly : false
+                        });
+
+                    }
+
+                }).done(function (resposta) {//executado quando servidor responder
+                    //se inseriu com sucesso remove o spiner
+                        if (resposta == 'Sucesso') {
+                            alert('Compra realizada com sucesso.');
+                            $.mobile.loading('hide');
+                        }
+
+                }).fail(function (erro) {
+
+                });
+
+                return false;
+
+            }
+
+            function aumentar(indice) {
+
+                document.getElementById('qtd_' + indice).value ++
+
+                return false;
+            }
+
+            function diminuir(indice) {
+
+                // var qtd = document.getElementById('qtd_' + indice);
+
+                if (document.getElementById('qtd_' + indice).value > 0) {
+
+                  document.getElementById('qtd_' + indice).value--;
+
+                }
+
+                return false;
+            }
+
+
+        </script>
+
+    <script>
+
+        function sair() {
+
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        //aguarda o documento esta pronto
+        //para carregar os dados
+        //ajax
+        $(document).ready(function () {
+           carregapagina();
+        })
+
+    </script>
+</body>
+</html>

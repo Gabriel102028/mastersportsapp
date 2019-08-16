@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable-n">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MasterSports.com</title>
+
+  <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <!-- JQUER MOBILE CDN DO GOOGLE -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div data-role="page">
+    <header data-role="header" id="cor" data-position="fixed">
+      <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+        <a href="#" onclick="voltar()" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a> <!--class="fa fa-reply"-->
+    </header>
+
+    <main data-role="main" class="ui-content">
+      <h1 id="logotipo">Cadastro Produto</h1>
+      <form id="cadastroProdutos" onsubmit="return cadastrar()" enctype="multipart/form-data">
+        <ul data-role="listview" data-inset="true">
+          <li class="ui-field-contain">
+            <label for="#">Nome do Produto</label>
+            <input type="text" name="nome" id="nome" data-clear-btn="true" placeholder="Nome do Produto">
+          </li>
+          <li class="ui-field-contain">
+            <label for="">Categoria</label>
+            <select name="categoria" id="campoCategoria">
+              <option value="">Selecione uma categoria</option>
+            </select>
+          </li>
+          <li>
+            <label for="">Marca</label>
+            <select name="marca" id="campoMarca">
+              <option value="">Selecione uma marca</option>
+            </select>
+          </li>
+          <li class="ui-field-contain">
+            <label for="">Preço</label>
+            <!-- <input type="text" onkeypress="return verifica(event)" name="" value="" placeholder="Preço do Produto"> -->
+            <input type="number" id="preco" name="preco" pattern="[0-9]*" id="number-pattern" value="">
+          </li>
+          <li class="ui-field-contain">
+            <label for="textarea2">Descrição</label>
+            <textarea cols="40" rows="8" id="descricao" name="descricao" placeholder="Descrição do Produto"></textarea>
+          </li>
+          <li class="ui-field-contain">
+            <label for="">Imagem</label>
+            <input type="file" name="imagem" id="imagem">
+          </li>
+          <!-- Botaõ Cadastrar -->
+
+          <li class="ui-field-contain">
+            <button type="submit" class="ui-btn ui-corner-all ui-btn-a"><i  class="fa fa-paper-plane" aria-hidden="true"
+                onclick="cadastrar()"></i> Cadastrar</button>
+          </li>
+        </ul>
+      </form>
+    </main>
+    <!-- Footer do app -->
+    <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+      <h2 id="titulo">Cadastrar Produto</h2>
+    </footer>
+  </div>
+
+  <script>
+
+    // function verifica()
+    //     {
+    //       if ((event.keyCode<44)||(event.keyCode>57)){
+    //         if ((event.keyCode<96)||(event.keyCode>106)){
+    //           alert("Somente números são permitidos");
+    //           event.returnValue = false;
+    //         }
+    //       }
+    //     }
+
+    function carregaCategoria(){
+
+      var endereco = 'http://localhost/mastersportsapp/conexao/send_categoria.php';
+
+      $.ajax({
+
+        url : endereco,
+        beforeSend : function(){
+          $.mobile.loading('show',{
+            text : 'Aguarde',
+            textVisible : true,
+            theme : 'b',
+            texOnly : false
+          })
+        }
+
+      }).done(function (resposta){
+
+        var categoria = JSON.parse(resposta);
+
+        categoria.map(function (categoria){
+
+          var cate = '<option value="' + categoria.id_categoria + '">' + categoria.nome_categoria +'</option>';
+          $('#campoCategoria').append(cate);
+        });
+        $.mobile.loading('hide');
+
+      }).fail(function(error) {
+
+
+      });
+
+    }
+
+    carregaCategoria();
+
+    function carregaMarca(){
+
+      var endereco = 'http://localhost/mastersportsapp/conexao/send_marca.php';
+
+      $.ajax({
+
+        url : endereco,
+        beforeSend : function() {
+          $.mobile.loading('show',{
+            text : 'Aguarde',
+            textVisible : true,
+            theme : 'b',
+            texOnly : false
+          })
+        }
+
+      }).done(function (resposta){
+
+        var marca = JSON.parse(resposta);
+
+        marca.map(function (marca){
+
+          var marc = '<option value="' + marca.id_marca +'">' + marca.nome_marca +'</option>';
+          $('#campoMarca').append(marc);
+        });
+          $.mobile.loading('hide');
+
+      }).fail(function (error){
+
+      });
+
+    }
+
+    carregaMarca();
+
+    function cadastrar(){
+
+        var novoProduto = new FormData(document.forms.cadastroProdutos);
+
+        if (novoProduto.nome == '') {
+          alert('Campo nome vazio..');
+          return false;
+        }
+
+        if (novoProduto.categoria == '') {
+          alert('Categoria não selecionada..')
+          return false;
+        }
+
+        if (novoProduto.marca == '') {
+          alert('Marca não selecionada..')
+          return false;
+        }
+
+        if(novoProduto.preco == ''){
+        alert ('Campo preço não selecionado..')
+        return false;
+      }
+
+      var cadastrar = 'http://localhost/mastersportsapp/conexao/cadastrar_produto.php';
+
+      $.ajax({
+
+        url : cadastrar,
+        type : 'post',
+        data : novoProduto,
+        processData: false,  
+        contentType: false,
+        beforeSend : function(){
+          $.mobile.loading('show',{
+            text : 'Cadastrando Produto..',
+            textVisible: true,
+            theme : 'b',
+            texOnly : false
+          });
+        }
+
+      }).done(function(resposta){
+        if (resposta == 'Sucesso') {
+          alert('Produto cadastrado com sucesso..');
+          window.location.href = 'cadastrar_produto.html';
+        }else {
+          alert('Erro:' + resposta);
+          $.mobile.loading('hide');
+        }
+
+      }).fail(function(erro){
+        alert ('Houve um erro. Tente novamente mais tarde.');
+      });
+
+      return false;
+    }
+
+
+    function voltar() {
+
+      //Botao sair
+      localStorage.clear();
+      window.location.href = 'menu_principal.html';
+    }
+
+    // Aguarda o documento estar pronto
+    // para carregar os dados
+    $(document).ready(function () {
+
+      // Chamando a função
+      // carregaPagina();
+
+    });
+
+
+  </script>
+</body>
+</html>

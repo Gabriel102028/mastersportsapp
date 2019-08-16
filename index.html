@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MasterSports.com</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">  
+  
+  <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <!-- JQUER MOBILE CDN DO GOOGLE -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+            // //obtem o id do usuario na sessao
+            // var id = localStorage.getItem('codigo_usuario');
+            //
+            // if (id) { //se ja existe codigo_usuario na sessao
+            // //redireciona para a pagina de produtos
+            // window.location.href = 'produto_listar.html';
+
+            //}
+  </script>
+</head>
+<body>
+  <!-- Pagina inicial do app / LOGIN-->
+
+  <div data-role="page" id="login"> <!--data-theme="b"-->
+    <!-- Conteudo da pagina -->
+    <main role="main" class="ui-content">
+      <div id="logotipo">
+        <p><i class="fa fa-maxcdn"></i>asterSports</p>
+      </div>
+      <h1 id="center">Login</h1>
+
+      <!-- Formulario de Login -->
+      <form id="formlogin" onsubmit="return entrar(event)">
+        <ul data-role="listview" data-inset="true">
+          <!-- Campo usuario -->
+          <li>
+            <label for="campoUsername"><i class="fa fa-user" aria-hidden="true"></i> Usuário</label>
+            <input type="text" id="campoUsername" name="" value="" placeholder="Digite seu Usuário">
+          </li>
+
+          <!-- Campo senha -->
+          <li>
+            <label for="campoSenha"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Senha</label>
+            <input type="password" id="campoSenha" name="" value="" placeholder="Digite sua Senha">
+          </li>
+
+          <!-- Botão Entrar -->
+          <li class="ui field-contain">
+            <button id="logon" data-theme="b">Entrar</button>
+          </li>
+        </ul>
+      </form>
+
+      <div id="cadastrese">
+        <a data-ajax="false" href="novo_usuario.html">Cadastre-se agora.</a>
+      </div>
+
+      <!-- Redes Sociais -->
+        <div style="text-align: center; padding-top: 20px;">
+          <a href="https://pt-br.facebook.com/"><i class="fa fa-facebook"></i></a>
+          <a href="https://twitter.com/"><i class="fa fa-twitter"></i></a>
+          <a href="https://accounts.google.com/signin/v2/identifier?service=mail&passive=true&rm=false&continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&ss=1&scc=1&ltmpl=default&ltmplcache=2&emr=1&osid=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin"><i class="fa fa-google"></i></a>
+          <a href="https://www.instagram.com/?hl=pt-br"><i class="fa fa-instagram"></i></a>
+        </div>
+    </main>
+  </div>
+
+
+
+  <script>
+
+    function entrar(e) {
+      e.preventDefault();
+
+      var Usuario = document.getElementById('campoUsername').value;
+
+      var Senha = document.getElementById('campoSenha').value;
+
+      var endereco = 'http://localhost/mastersportsapp/conexao/login.php';
+
+      var dados = {
+        username: Usuario,
+        senha: Senha
+      };
+
+      $.ajax({
+
+        url: endereco,
+        type: 'post',
+        data: dados,
+        BeforeSend: function () {
+
+          $.mobile.loading(
+            'show', {
+              text: 'Aguarde um momento...',
+              textVisible: true,
+              theme: 'b',
+              textOnly: false
+            }
+          )
+        }
+
+
+      }).done(function (resposta) {
+
+        var user = JSON.parse(resposta);
+
+        if (user) {
+
+          localStorage.setItem('codigo_usuario', user.codigo_usuario);
+          localStorage.setItem('username', user.username);
+          localStorage.setItem('nome_completo', user.nome_completo);
+          localStorage.setItem('endereco', user.endereco);
+          localStorage.setItem('estado_cod', user.estado_cod);
+          localStorage.setItem('cidade_cod', user.cidade_cod);
+          localStorage.setItem('tipo', user.tipo);
+
+          if (user.tipo == 'adm') {
+            window.location.href = 'menu_principal.html';
+
+          } else {
+            window.location.href = 'produto_listar.html';
+
+          }
+
+
+        } else {
+          alert('Usuário ou senha invalida.');
+          document.forms.formlogin.reset();
+          document.forms.formlogin.campoUsername.focus();
+          $.mobile.loading('hide');
+          return false;
+        }
+
+      }).fail(function (erro) {
+
+
+      })
+
+      return false;
+    }
+
+  </script>
+</body>
+</html>

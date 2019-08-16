@@ -1,0 +1,3 @@
+ALTER TABLE produtos_tb
+ADD COLUMN id_marca int,
+ADD FOREIGN KEY (id_marca) REFERENCES marca (id_marca)

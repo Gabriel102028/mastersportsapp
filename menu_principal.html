@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MasterSports.com</title>
+
+  <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <!-- JQUER MOBILE CDN DO GOOGLE -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+<!--
+  <script>
+    if (user.tipo != 'adm') {
+      window.location.href = 'produto_listar.html';
+
+    }
+
+  </script> -->
+</head>
+<body>
+  <div data-role="page">
+    <header data-role="header" id="cor" data-position="true">
+      <!--Titulo  -->
+      <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+      <a href="#" onclick="sair()" class="ui-btn-right ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a> <!-- class="fa fa-power-off"-->
+    </header>
+
+    <!-- Conteudo Principal -->
+    <main role="main" class="ui-content" id="margtop">
+      <ul data-role="listview" data-inset="true" class="ui-alt-icon">
+        <li data-icon="plus" class="ui-field-contain" data-icon="false">
+          <a href="cadastrar_categoria.html" data-icon="plus" data-ajax="false"> <!--data-transition="slidefade"-->
+            <h2>Cadastrar Categoria</h2>
+            <p>Adicionar Categoria</p>
+          </a>
+        </li>
+
+        <li data-icon="plus" class="ui-field-contain" data-icon="false">
+          <a href="cadastrar_marca.html" data-icon="plus" data-ajax="false">        
+            <h2>Cadastrar Marca</h2>
+            <p>Adicionar Marca</p>
+          </a>
+        </li>
+
+        <li data-icon="plus" class="ui-field-contain" data-icon="false">
+          <a href="cadastrar_produto.html" data-icon="plus" data-ajax="false">        
+            <h2>Cadastrar Produto</h2>
+            <p>Adicionar Produto</p>
+          </a>
+        </li>
+      </ul>
+    </main>
+
+    <!-- Footer do app -->
+    <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+      <h2 id="titulo">Menu Principal</h2>
+    </footer>
+  </div>
+
+  <script>
+
+
+    function sair() {
+
+      //Botao sair
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    // Aguarda o documento estar pronto
+    // para carregar os dados
+    $(document).ready(function () {
+
+      // Chamando a função
+      // carregaPagina();
+
+    });
+
+  </script>
+
+</body>
+</html>

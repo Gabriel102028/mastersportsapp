@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable-no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MasterSports.com</title>
+
+  <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <!-- JQUER MOBILE CDN DO GOOGLE -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div data-role="page">
+    <header data-role="header" id="cor" data-position="fixed">
+      <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+      <a href="#" onclick="voltar()" class="ui-btn-left ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a>
+    </header>
+
+    <main data-role="main" class="ui-content">
+      <h1 id="logotipo">Cadastro Categoria</h1>
+      <form id="cadastroProdutos" onsubmit="return cadastrar()">
+        <ul data-role="listview" data-inset="true">
+          <li class="ui-field-contain">
+            <label for="#">Nome da categoria</label>
+            <input type="text" name="" id="nome" data-clear-btn="true" placeholder="Nome da categoria">
+          </li>
+
+          <li class="ui-field-contain">
+            <button type="submit" class="ui-btn ui-corner-all ui-btn-a"><i  class="fa fa-paper-plane" aria-hidden="true"
+                onclick="cadastrar()"></i> Cadastrar</button>
+          </li>
+        </ul>
+      </form>
+    </main>
+    <!-- Footer do app -->
+    <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+      <h2 id="titulo">Cadastrar Categoria</h2>
+    </footer>
+
+    <script>
+
+      function cadastrar(){
+
+        var novaCategoria = {
+
+          nome : document.forms.cadastroProdutos.nome.value,
+
+        };
+
+        if (novaCategoria.nome == ''){
+          alert('Campo nome vazio..');
+          return false;
+        }
+
+        var cadastrar = 'http://localhost/mastersportsapp/conexao/cadastrar_categoria.php';
+
+        $.ajax({
+
+            url : cadastrar,
+            type : 'post',
+            data : novaCategoria,
+            beforeSend : function(){
+              $.mobile.loading('show',{
+                text : 'Cadastrando categoria..',
+                textVisible : true,
+                theme : 'b',
+                textonly : false
+              });
+            }
+
+        }).done(function(resposta){
+          if(resposta == 'Sucesso'){
+            alert('Categoria cadastrada com sucesso..');
+            window.location.href = 'cadastrar_categoria.html';
+          }else {
+            alert('Erro:' + resposta);
+            $.mobile.loading('hide');
+          }
+
+        }).fail(function(erro){
+          alert('Houve um erro. Tente novamente mais tarde.');
+        });
+
+        return false;
+
+      }
+
+      function voltar() {
+
+        //Botao sair
+        localStorage.clear();
+        window.location.href = 'menu_principal.html';
+      }
+
+      // Aguarda o documento estar pronto
+      // para carregar os dados
+      $(document).ready(function () {
+
+        // Chamando a função
+        // carregaPagina();
+
+      });
+
+    </script>
+
+</body>
+</html>

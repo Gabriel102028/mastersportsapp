@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable-no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MasterSports.com</title>
+
+    <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <!-- JQUER MOBILE CDN DO GOOGLE -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+    <div data-role="page">
+      <header data-role="header" id="cor" data-position="fixed">
+        <!--Titulo  -->
+        <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+        <a href="#" onclick="sair()" class="ui-btn-righ ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a> <!--class="fa fa-reply"-->
+      </header>
+
+      <!-- Conteudo da Pagina -->
+      <main role="main" class="ui-content">
+            <h1 id="novoUsuario">Novo Usuário</h1>
+        <form id="formNovoUsuario" onsubmit="return cadastrar()">
+          <ul data-role="listview" data-inset="true">
+            <li class="ui-field-contain">
+              <label for="">Nome</label>
+              <input type="text" name="nome" id="nome" value="" data-clear-btn="true" placeholder="Digite seu Nome">
+            </li>
+            <li class="ui-field-contain">
+              <label for="">Nome Completo</label>
+              <input type="text" name="nomeCompleto" id="nomeCompleto" value="" data-clear-btn="true" placeholder="Digite seu nome completo">
+            </li>
+            <li class="ui-field-contain">
+              <label for="">Endereço</label>
+              <input type="text" name="endereco" id="endereco" value="" data-clear-btn="true" placeholder="Digite seu Endereço">
+            </li>
+            <li>
+              <label for="select-choice-1" class="select">Estado</label>
+              <select onchange="carregaCidades()" id="campoestado">
+                <option value="">Selecione um estado</option>
+              </select>
+            </li>
+            <li class="ui-field-contain">
+              <label for="select-choice-1" class="select">Cidade</label>
+              <select name="" id="campocidade">
+                <option value="">Selecione uma Cidade</option>
+              </select>
+            </li>
+
+            <li class="ui-field-contain">
+              <label for="">Senha</label>
+              <input type="password" name="senha" id="senha" data-clear-btn="true" placeholder="Digite uma senha">
+            </li>
+            <li>
+              <label for="">Comfirme sua senha</label>
+              <input type="password" name="comfirmarsenha" id="comfirmarsenha" data-clear-btn="true"  placeholder="Digite Novamente">
+            </li>
+
+            <li class="ui-field-contain">
+              <button type="submit" class="ui-btn ui-corner-all ui-btn-a"><i class="fa fa-paper-plane" aria-hidden="true" onclick="cadastrar()"></i> Cadastrar</button>
+            </li>
+          </ul>
+        </form>
+      </main>
+
+      <!-- Footer do app -->
+      <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+        <h2 id="titulo">Novo Usuário</h2>
+      </footer>
+    </div>
+
+    <script>
+
+      function cadastrar(){
+
+        return false;
+
+      }
+
+      function carregaEstados(){
+
+          var endereço = 'http://localhost/mastersportsapp/conexao/send_estados.php';
+
+          $.ajax({
+
+            url : endereço,
+            beforeSend : function(){
+              $.mobile.loading('show',{
+                text : 'Aguarde',
+                textVisible : true,
+                theme : 'b',
+                texOnly : false
+              })
+            }
+
+
+          }).done(function (resposta){
+
+            var estados = JSON.parse(resposta);
+
+            estados.map(function (estado){
+
+              var est = '<option value="' + estado.id + '">' + estado.nome + '</option>';
+              $('#campoestado').append(est);
+            });
+            $.mobile.loading('hide');
+
+
+          }).fail(function(error){
+
+
+          });
+      }
+
+      function carregaCidades() {
+
+        var endereco = 'http://localhost/mastersportsapp/conexao/send_cidades.php';
+
+        var idEstado = $('#campoestado').val();
+
+        $.ajax({
+
+          url : endereco,
+          data :{
+            estado_cod : idEstado
+          }
+
+        }).done(function(resposta){
+
+          var cidades = JSON.parse(resposta);
+
+          $('#campocidade').html('<option value="0">Selecione uma cidade</option>');
+
+          cidades.map(function(cidade){
+
+            var cid = '<option value="' + cidade.id +'">' + cidade.nome + '</option>';
+            $('#campocidade').append(cid);
+          });
+          $.mobile.loading('hide');
+
+        }).fail(function(erro){
+
+        });
+
+      }
+
+      carregaEstados();
+
+      function cadastrar(){
+
+        var novoUsuario = {
+
+          nome : document.forms.formNovoUsuario.nome.value,
+          nomeCompleto : document.forms.formNovoUsuario.nomeCompleto.value,
+          endereco : document.forms.formNovoUsuario.endereco.value,
+          estado : document.forms.formNovoUsuario.campoestado.value,
+          cidade : document.forms.formNovoUsuario.campocidade.value,
+          senha : document.forms.formNovoUsuario.senha.value,
+          comfirmarsenha : document.forms.formNovoUsuario.comfirmarsenha.value,
+
+        };
+
+        if (novoUsuario.nome == ''){
+        alert('Campo nome vazio..');
+        return false;
+
+        }
+
+        if (novoUsuario.nomeCompleto == ''){
+        alert('Campo Nome completo vazio..');
+        return false;
+
+        }
+
+        if (novoUsuario.endereco == ''){
+          alert('Campo endereço vazio..');
+          return false;
+
+        }
+
+        if (formNovoUsuario.estado == ''){
+          alert('Campo estado não selecionado..');
+          return false;
+
+        }
+
+        if (formNovoUsuario.cidade == ''){
+          alert('Campo cidade não selecionado..');
+          return false;
+
+        }
+
+        if (novoUsuario.senha != novoUsuario.comfirmarsenha){
+          alert('Senhas não comferem..');
+          return false;
+        }
+
+        var cadastrar = 'http://localhost/mastersportsapp/conexao/novo_usuario.php';
+
+        $.ajax({
+          url : cadastrar,
+          type : 'post',
+          data : novoUsuario,
+          beforeSend :function(){
+            $.mobile.loading('show',{
+              text : 'Cadastrando Usuario..',
+              textVisible : true,
+              theme : 'b',
+              textonly : false
+            });
+          }
+
+        }).done(function(resposta){
+          if(resposta == 'Sucesso'){
+            alert('Usuario cadastrado com sucesso..');
+            window.location.href = 'novo_usuario.html';
+          }else {
+            alert(resposta);
+            $.mobile.loading('hide');
+          }
+
+        }).fail(function(erro){
+          alert('Houve um erro. Tente novamente mais tarde.');
+        });
+
+        return false;
+
+      }
+
+         function sair(){
+
+             //Botao sair
+             localStorage.clear();
+             window.location.href = 'index.html';
+             }
+
+             // Aguarda o documento estar pronto
+             // para carregar os dados
+             $(document).ready(function(){
+
+             // Chamando a função
+            // carregaPagina();
+
+         });
+
+    </script>
+  </body>
+</html>

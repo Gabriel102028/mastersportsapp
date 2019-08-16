@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MasterSports.com</title>
+
+    <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    <!-- JQUER MOBILE CDN DO GOOGLE -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+
+        // //obtem o id do usuario na sessao
+        // var id = localStorage.getItem('codigo_usuario');
+
+        // if (!id) {//se nao existe codigo_usuario na sessao
+        //     //redireciona para a pagina principal
+        //     window.location.href = 'index.html';
+        // }
+    </script>
+</head>
+
+<body>
+
+    <div data-role="page" id="paginped">
+        <header data-role="header" id="cor" data-position="fixed">
+            <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+            <!-- <a href="#" onclick="sair()" class="ui-btn-right ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-power-off"></i> Sair</a> -->
+            <a href="#" onclick="sair()" class="ui-btn-right ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="produto_listar.html" data-ajax="false"><i class="fa fa-shopping-bag"></i> Produtos</a></li>
+                    <li><a href="pedidos_listar.html" class="ui-btn-active"><i class="fa fa-shopping-cart"></i> Pedidos</a></li>
+                </ul>
+            </div>
+        </header>
+
+        <main role="main" class="ui-content">
+            <ul id="pedlista" data-role="listview" data-inset="true" data-icon="eye">
+
+            </ul>
+        </main>
+
+        <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+          <h2 id="titulo">Pedidos</h2>
+        </footer>
+    </div>
+
+    <script>
+
+        function carregapedido() {
+            var endereco = 'http://localhost/mastersportsapp/conexao/pedidos_listar.php';
+
+            var dados = {
+                id: localStorage.getItem('codigo_usuario')
+            }
+            $.ajax({
+
+                data: dados,
+                url: endereco,
+                type: 'get',
+                beforeSend: function () { //executa antes de enviar o ajax
+
+                    //mostrar o spinner
+                    $.mobile.loading('show',{
+                        text: 'carregando pedido..',
+                        textVisible: true,
+                        theme: 'b',
+                        textonly: false
+                    })
+                }
+            }).done(function (resposta) { //executado quando recebee a resposta do servidor
+
+                //converte uma string JSON em um objeto
+                var pedidos = JSON.parse(resposta);
+
+                pedidos.map(function (pedido, indice) {
+
+                    var pedStr = '<li>';
+                    pedStr += '<a href="detalhes_listar.html?id_pedido=' + pedido.id_pedido + '" data-ajax="false">';
+                    pedStr += '<strong>Código da Compra  ' + pedido.id_pedido + '</strong>';
+                    // pedStr += '<p>Nome do prduto' + pedido.nome_prod + '<p>';
+                    pedStr += '<p>Data da compra: ' + pedido.data_pedido + '</p>';
+                    // pedStr += '<p>' + pedido.data_fechamento + '</p>';
+                    pedStr += '<p>Status da compra: ' + pedido.status_pedido + '</p>';
+                    // pedStr += '<p>' + pedido.valor_prod + '</p>'
+                    pedStr += '</a>';
+                    pedStr += '</li>';
+
+                    $('#pedlista').append(pedStr);
+
+                    $('#pedlista').listview('refresh');
+
+                });
+                $.mobile.loading('hide');
+
+            }).fail(function (erro) { //executar quando a equisiçao retornar um erro
+
+            });
+        }
+        carregapedido();
+
+        function sair() {
+
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+    </script>
+</body>
+</html>

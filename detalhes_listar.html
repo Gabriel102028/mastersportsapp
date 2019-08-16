@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MasterSports.com</title>
+
+  <!-- JQUERY CDN DO GOOGLE / https://developers.google.com/speed/libraries/#jquery-mobile -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+  <!-- JQUER MOBILE CDN DO GOOGLE -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+
+  <!-- Font-Awesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+  <body>
+    <div data-page="page">
+    <header data-role="header" id="cor" data-position="fixed">
+      <!--Titulo  -->
+      <h1 id="titulo"><i class="fa fa-maxcdn">asterSports</i></h1>
+      <a href="#" onclick="voltar()" class="ui-btn-righ ui-btn ui-btn-inline ui-mini ui-corner-all"><i class="fa fa-chevron-left" aria-hidden="true"></i> Voltar</a> <!--class="fa fa-reply"-->
+    </header>
+
+    <main role="main" class="ui-content">
+      <ul id="detalhes" data-role="listview" data-inset="true">
+
+      </ul>
+    </main>
+
+    <footer data-role="footer" id="cor" data-position="fixed" id="footer">
+      <h2 id="titulo">Detalhes do pedido</h2>
+    </footer>
+    </div>
+
+    <script>
+
+
+    $.urlParam = function(name){
+
+      var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+      if (results==null) {
+        return null;
+      }
+
+      return decodeURI(results[1]) || 0;
+    }
+
+        function carregadetalhe(){
+
+        var endereco = 'http://localhost/mastersportsapp/conexao/detalhes_listar.php';
+
+        var dados = {
+
+          cod_pedido : $.urlParam('id_pedido')
+        }
+
+        $.ajax({
+
+          data : dados,
+          url : endereco,
+          type : 'get',
+          beforeSend : function(){
+
+            $.mobile.loading('show',{
+              text : 'Carregando detalhes..',
+              textVisible : true,
+              theme : 'b',
+              textonly : false
+            })
+          }
+        }).done(function (resposta){
+
+          var detalhes = JSON.parse(resposta);
+
+          detalhes.map(function (details, indice){
+
+            var detail = '<li data-icon="false">';
+            detail += '<a href="#" data-ajax="false">';
+            detail += '<strong> ' + details.nome_prod + '</strong>';
+            detail += '<p>Categoria: ' +  details.nome_categoria + '</p>';
+            detail += '<p>Marca: ' + details.nome_marca + '</p>';
+            detail += '<p>Descricao: ' + details.descricao_prod + '</p>';
+            detail += '<p>Quantidade: ' + details.qtd_produto + '</p>';
+            detail += '<p>Valor $ ' + details.valor_prod + '</p>';
+            detail += '</a>';
+            detail += '</li>';
+
+            $('#detalhes').append(detail);
+
+            $('#detalhes').listview('refresh');
+          });
+          $.mobile.loading('hide');
+
+        }).fail(function(erro){
+
+        });
+
+        }
+        carregadetalhe();
+
+        function voltar() {
+
+          //Botao sair
+          // localStorage.clear();
+          window.location.href = 'pedidos_listar.html';
+        }
+
+        // Aguarda o documento estar pronto
+        // para carregar os dados
+        $(document).ready(function () {
+
+          // Chamando a função
+          // carregaPagina();
+
+        });
+
+    </script>
+
+  </body>
+</html>
